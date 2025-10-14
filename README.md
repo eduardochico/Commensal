@@ -1,12 +1,14 @@
 # Commensal Backend
 
-API construida con NestJS para enviar y validar códigos de verificación vía WhatsApp usando Twilio y Redis.
+
+API construida con NestJS para enviar y validar códigos de verificación vía SMS usando Twilio y Redis.
 
 ## Requisitos
 
 - Node.js 18+
 - Redis local en ejecución
-- Cuenta de Twilio con acceso a la API de WhatsApp
+
+- Cuenta de Twilio con un número habilitado para SMS
 
 ## Configuración
 
@@ -20,7 +22,7 @@ Variables principales:
 
 - `API_KEY`: llave que deben enviar los clientes en el header `x-api-key`.
 - `TWILIO_ACCOUNT_SID` y `TWILIO_AUTH_TOKEN`: credenciales de Twilio.
-- `TWILIO_WHATSAPP_FROM`: número autorizado por Twilio en formato `whatsapp:+1234567890`.
+- `TWILIO_SMS_FROM`: número autorizado por Twilio en formato `+1234567890`.
 - `VERIFICATION_TTL`: segundos que dura vigente el código (default 600).
 - Datos de conexión a Redis (`REDIS_HOST`, `REDIS_PORT`, `REDIS_PASSWORD`).
 
@@ -57,7 +59,7 @@ Body:
 }
 ```
 
-Genera un código de 4 dígitos, lo guarda en Redis y envía un WhatsApp con el código.
+Genera un código de 4 dígitos, lo guarda en Redis y envía un SMS con el código.
 
 ### POST `/verification/verify`
 
