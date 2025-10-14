@@ -1,11 +1,13 @@
 # Commensal Backend
 
+
 API construida con NestJS para enviar y validar códigos de verificación vía SMS usando Twilio y Redis.
 
 ## Requisitos
 
 - Node.js 18+
 - Redis local en ejecución
+
 - Cuenta de Twilio con un número habilitado para SMS
 
 ## Configuración
