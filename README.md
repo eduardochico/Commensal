@@ -20,6 +20,9 @@ cp .env.example .env
 
 Variables principales:
 
+- `HTTPS_ENABLED`: activa/desactiva el arranque en HTTPS (default `true`).
+- `HTTPS_KEY_PATH` y `HTTPS_CERT_PATH`: rutas al archivo `.key` y `.crt/.pem` para el servidor HTTPS.
+- `HTTPS_CA_PATH`: (opcional) ruta a la cadena de certificados si es necesaria.
 - `API_KEY`: llave que deben enviar los clientes en el header `x-api-key`.
 - `TWILIO_ACCOUNT_SID` y `TWILIO_AUTH_TOKEN`: credenciales de Twilio.
 - `TWILIO_SMS_FROM`: número autorizado por Twilio en formato `+1234567890`.
@@ -80,3 +83,4 @@ Valida el código contra Redis y, si coincide, marca la verificación como exito
 - Los números telefónicos deben venir en formato E.164.
 - Redis almacena los códigos usando como llave la combinación de correo y teléfono.
 - Al validar correctamente, el código se elimina de Redis.
+- El servidor intentará iniciar en HTTPS por defecto. Si faltan certificados válidos, retrocede automáticamente a HTTP.
