@@ -3,6 +3,7 @@
 // Use a separate index.html (served by Vite/Node) to include <div id="root"> and load main.tsx.
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { BrowserRouter, Navigate, Route, Routes, useNavigate } from "react-router-dom";
 
 // ---------- Inline UI primitives ----------
 function Button({ className = "", style, children, ...props }: any) {
@@ -137,7 +138,7 @@ function Dice3DVisible(){
 }
 
 // ---------- Signup (SMS) with SAME background ----------
-function SmsSignup({ onBack, onNext, t, lang }: { onBack: () => void; onNext: () => void; t: any; lang: string; }){
+function SmsSignup({ onBack, onNext, t, lang, setLang }: { onBack: () => void; onNext: () => void; t: any; lang: string; setLang: (l: string) => void; }){
   const [country, setCountry] = useState(COUNTRIES[0]);
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -156,7 +157,7 @@ function SmsSignup({ onBack, onNext, t, lang }: { onBack: () => void; onNext: ()
         <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/50 to-black/80"/>
       </div>
 
-      <LanguageSelector lang={lang} setLang={() => {}}/>
+      <LanguageSelector lang={lang} setLang={setLang}/>
 
       <div className="w-full min-h-screen flex items-start justify-center p-4">
         <div className="w-full max-w-xl rounded-3xl bg-white/10 backdrop-blur-xl ring-1 ring-white/15 shadow-2xl p-6 md:p-8">
@@ -254,40 +255,19 @@ function VerifyCode({ onBack, onConfirm, t, lang, setLang }: { onBack: () => voi
 }
 
 // ---------- App ----------
-export default function CommensalMock(){
-  const {t,isEs,lang,setLang}=useI18n();
-  const [stage, setStage] = useState<'home'|'signup'|'verify'>("home");
+function HomeScreen({ t, isEs, lang, setLang }: { t: any; isEs: boolean; lang: string; setLang: (l: string) => void }) {
+  const navigate = useNavigate();
 
-  // Smoke tests (runtime) – add a couple to ensure key elements exist
-  useEffect(()=>{
-    console.assert(typeof Dice3DVisible === 'function', 'Dice3DVisible defined');
-    console.assert(typeof LanguageSelector === 'function', 'LanguageSelector defined');
-  },[]);
-
-  if (stage === 'signup') return (
-    <div className="relative min-h-screen text-white overflow-x-hidden pb-10">
-      <LanguageSelector lang={lang} setLang={setLang}/>
-      <SmsSignup onBack={()=>setStage('home')} onNext={()=>setStage('verify')} t={t} lang={lang}/>
-    </div>
-  );
-
-  if (stage === 'verify') return (
-    <div className="relative min-h-screen text-white overflow-x-hidden pb-10">
-      <VerifyCode onBack={()=>setStage('signup')} onConfirm={(code)=>{ console.log('Code entered:', code); alert((isEs? 'Código verificado: ' : 'Code verified: ')+code); setStage('home'); }} t={t} lang={lang} setLang={setLang}/>
-    </div>
-  );
-
-  // Home
   return (
     <div className="relative min-h-screen text-white overflow-x-hidden pb-40">
       {/* Background */}
       <div className="absolute inset-0 -z-10">
-        <img src={BG_IMAGE} alt="Restaurant background" className="w-full h-full object-cover"/>
-        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/50 to-black/80"/>
+        <img src={BG_IMAGE} alt="Restaurant background" className="w-full h-full object-cover" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/50 to-black/80" />
       </div>
 
       {/* Language Selector */}
-      <LanguageSelector lang={lang} setLang={setLang}/>
+      <LanguageSelector lang={lang} setLang={setLang} />
 
       {/* Header */}
       <header className="pt-10 flex flex-col items-center gap-2">
@@ -297,14 +277,18 @@ export default function CommensalMock(){
       </header>
 
       {/* Dice */}
-      <section className="flex items-center justify-center mt-6"><Dice3DVisible/></section>
+      <section className="flex items-center justify-center mt-6">
+        <Dice3DVisible />
+      </section>
 
       {/* Grand prize card */}
       <section className="mx-auto mt-6 w-full max-w-3xl px-4 text-center">
         <Card className="bg-black/60 text-white border-white/10">
           <CardContent className="p-5 md:p-6 flex items-center justify-between gap-4">
-            <Badge className="shadow-lg" style={{background:'linear-gradient(145deg,#27AE60,#1E8449)',color:'white',boxShadow:'0 0 15px #27AE60aa'}}>{t.grandRaffle}</Badge>
-            <div className="text-xl md:text-2xl font-bold tracking-wide">{isEs?DEFAULT_PRIZES[0].title_es:DEFAULT_PRIZES[0].title_en}</div>
+            <Badge className="shadow-lg" style={{ background: "linear-gradient(145deg,#27AE60,#1E8449)", color: "white", boxShadow: "0 0 15px #27AE60aa" }}>
+              {t.grandRaffle}
+            </Badge>
+            <div className="text-xl md:text-2xl font-bold tracking-wide">{isEs ? DEFAULT_PRIZES[0].title_es : DEFAULT_PRIZES[0].title_en}</div>
             <div className="text-xs text-white/70">{t.limited}</div>
           </CardContent>
         </Card>
@@ -312,7 +296,7 @@ export default function CommensalMock(){
 
       {/* Prize list */}
       <section className="mx-auto mt-5 grid w-full max-w-3xl grid-cols-1 gap-3 px-4">
-        {DEFAULT_PRIZES.slice(1).map(p => (
+        {DEFAULT_PRIZES.slice(1).map((p) => (
           <div key={p.key} className="flex items-center justify-between rounded-3xl bg-black/55 px-5 py-4 ring-1 ring-white/10 shadow-lg">
             <div className="flex items-center gap-4">
               <div className="flex size-10 items-center justify-center rounded-2xl bg-white/10 ring-1 ring-white/20">
@@ -330,10 +314,67 @@ export default function CommensalMock(){
       {/* CTA */}
       <section className="mx-auto mt-6 mb-24 w-full max-w-3xl px-4">
         <div className="rounded-3xl bg-black/55 p-5 ring-1 ring-white/10 text-center">
-          <Button onClick={()=>setStage('signup')} className="w-full rounded-2xl py-6 text-base font-semibold hover:scale-105 transition-transform duration-300 tracking-wide uppercase" style={{background:'linear-gradient(135deg,#E67E22,#C0392B,#F33912)',color:'white',boxShadow:'0 0 20px rgba(230,126,34,0.6),0 0 10px rgba(192,57,43,0.5)'}}>{t.registerCta} →</Button>
+          <Button
+            onClick={() => navigate("/signup")}
+            className="w-full rounded-2xl py-6 text-base font-semibold hover:scale-105 transition-transform duration-300 tracking-wide uppercase"
+            style={{ background: "linear-gradient(135deg,#E67E22,#C0392B,#F33912)", color: "white", boxShadow: "0 0 20px rgba(230,126,34,0.6),0 0 10px rgba(192,57,43,0.5)" }}
+          >
+            {t.registerCta} →
+          </Button>
           <div className="mt-2 text-xs text-white/70">{t.oneEntry}</div>
         </div>
       </section>
     </div>
+  );
+}
+
+function SignupRoute({ t, lang, setLang }: { t: any; lang: string; setLang: (l: string) => void }) {
+  const navigate = useNavigate();
+
+  return (
+    <div className="relative min-h-screen text-white overflow-x-hidden pb-10">
+      <SmsSignup onBack={() => navigate("/")} onNext={() => navigate("/verify")} t={t} lang={lang} setLang={setLang} />
+    </div>
+  );
+}
+
+function VerifyRoute({ t, lang, setLang, isEs }: { t: any; lang: string; setLang: (l: string) => void; isEs: boolean }) {
+  const navigate = useNavigate();
+
+  return (
+    <div className="relative min-h-screen text-white overflow-x-hidden pb-10">
+      <VerifyCode
+        onBack={() => navigate("/signup")}
+        onConfirm={(code) => {
+          console.log("Code entered:", code);
+          alert((isEs ? "Código verificado: " : "Code verified: ") + code);
+          navigate("/");
+        }}
+        t={t}
+        lang={lang}
+        setLang={setLang}
+      />
+    </div>
+  );
+}
+
+export default function CommensalMock() {
+  const { t, isEs, lang, setLang } = useI18n();
+
+  // Smoke tests (runtime) – add a couple to ensure key elements exist
+  useEffect(() => {
+    console.assert(typeof Dice3DVisible === "function", "Dice3DVisible defined");
+    console.assert(typeof LanguageSelector === "function", "LanguageSelector defined");
+  }, []);
+
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<HomeScreen t={t} isEs={isEs} lang={lang} setLang={setLang} />} />
+        <Route path="/signup" element={<SignupRoute t={t} lang={lang} setLang={setLang} />} />
+        <Route path="/verify" element={<VerifyRoute t={t} lang={lang} setLang={setLang} isEs={isEs} />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
