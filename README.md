@@ -38,7 +38,7 @@ Variables principales:
 npm install
 ```
 
-3. Genera los archivos estáticos del frontend (opcional en desarrollo, pero necesario si modificas `frontend/main.tsx`):
+3. Genera los archivos estáticos del frontend (opcional en desarrollo, pero necesario si modificas `public/main.tsx`):
 
 ```bash
 npm run build:frontend
