@@ -10,8 +10,9 @@ import { inspect } from 'util';
 export class VerificationService {
   private readonly logger = new Logger(VerificationService.name);
   private readonly ttlSeconds: number;
-  private readonly twilioClient: Twilio;
-  private readonly smsFrom: string;
+  private readonly twilioClient: Twilio | null;
+  private readonly smsFrom: string | null;
+  private readonly twilioMockMode: boolean;
 
   constructor(
     private readonly configService: ConfigService,
@@ -19,8 +20,19 @@ export class VerificationService {
   ) {
     const accountSid = this.configService.get<string>('TWILIO_ACCOUNT_SID');
     const authToken = this.configService.get<string>('TWILIO_AUTH_TOKEN');
-    this.smsFrom = this.configService.get<string>('TWILIO_SMS_FROM', '');
+    this.smsFrom = this.configService.get<string>('TWILIO_SMS_FROM', '') ?? null;
     this.ttlSeconds = Number(this.configService.get<string>('VERIFICATION_TTL', '600'));
+    this.twilioMockMode = this.parseBoolean(
+      this.configService.get<string>('TWILIO_MOCK_MODE', 'false'),
+    );
+
+    if (this.twilioMockMode) {
+      this.twilioClient = null;
+      this.logger.warn(
+        'TWILIO_MOCK_MODE está activo: los SMS no se enviarán y los códigos solo se registrarán en logs.',
+      );
+      return;
+    }
 
     if (!accountSid || !authToken) {
       throw new Error('Twilio credentials are not configured');
@@ -41,19 +53,32 @@ export class VerificationService {
     await redis.set(redisKey, code, 'EX', this.ttlSeconds);
 
     try {
-      await this.twilioClient.messages.create({
-        from: this.smsFrom,
-        to: phoneNumber,
-        body: `Tu código de verificación es: ${code}`,
-      });
+      if (this.twilioMockMode) {
+        this.logger.log(
+          `[MOCK] Código de verificación para ${phoneNumber} (${email}): ${code}. No se envió SMS porque TWILIO_MOCK_MODE está activo.`,
+        );
+      } else if (this.twilioClient) {
+        await this.twilioClient.messages.create({
+          from: this.smsFrom ?? undefined,
+          to: phoneNumber,
+          body: `Tu código de verificación es: ${code}`,
+        });
+      }
     } catch (error) {
       const err = error as Error & { code?: string };
       const stack = err instanceof Error ? err.stack : undefined;
       const codeInfo = err?.code ? ` (code: ${err.code})` : '';
+      const status = (error as { status?: number }).status;
+      const errorCode = err?.code !== undefined && err?.code !== null ? String(err.code) : undefined;
 
       this.logger.error(`Error enviando SMS${codeInfo}: ${err.message}`, stack);
       this.logger.error(`Detalles completos del error de Twilio:\n${inspect(error, { depth: null })}`);
       await redis.del(redisKey);
+      if (status === 401 || errorCode === '20003') {
+        throw new InternalServerErrorException(
+          'No se pudo autenticar con Twilio. Verifica TWILIO_ACCOUNT_SID y TWILIO_AUTH_TOKEN.',
+        );
+      }
       throw new InternalServerErrorException('No se pudo enviar el SMS');
     }
 
@@ -85,6 +110,18 @@ export class VerificationService {
       phoneNumber,
       verified: true,
     };
+  }
+
+  private parseBoolean(value?: string | boolean | null) {
+    if (typeof value === 'boolean') {
+      return value;
+    }
+
+    if (typeof value !== 'string') {
+      return false;
+    }
+
+    return ['1', 'true', 'yes', 'on'].includes(value.toLowerCase());
   }
 
   private buildRedisKey(email: string, phoneNumber: string) {
