@@ -42,7 +42,6 @@ type HomeConfig = {
   address: string;
   backgroundImageUrl: string;
   secondaryImageUrl: string;
-  featuredPrize: string;
   prizes: string[];
   longDescription: string;
   websiteUrl: string;
@@ -327,7 +326,7 @@ function HomeScreen({ t, lang, setLang, config }: { t: any; lang: string; setLan
             <Badge className="shadow-lg" style={{ background: "linear-gradient(145deg,#27AE60,#1E8449)", color: "white", boxShadow: "0 0 15px #27AE60aa" }}>
               {t.grandRaffle}
             </Badge>
-            <div className="text-xl md:text-2xl font-bold tracking-wide">{config.featuredPrize}</div>
+            <div className="text-xl md:text-2xl font-bold tracking-wide">{config.bigPrize.name}</div>
             <div className="text-xs text-white/70">{t.limited}</div>
           </CardContent>
         </Card>
@@ -397,7 +396,7 @@ function RegisteredHomepage({ config, lang, setLang, isEs }: { config: HomeConfi
       minute: "2-digit",
     }).format(date);
   }, []);
-  const topBackground = config.secondaryImageUrl || config.backgroundImageUrl || DEFAULT_BG_IMAGE;
+  const topBackground = config.backgroundImageUrl || DEFAULT_BG_IMAGE;
   const progressPercent = useMemo(() => {
     if (config.totalPoints <= 0) {
       return 0;
@@ -477,8 +476,8 @@ function RegisteredHomepage({ config, lang, setLang, isEs }: { config: HomeConfi
   return (
     <div className="relative min-h-screen text-white overflow-x-hidden pb-20">
       <div className="absolute inset-0 -z-10">
-        <img src={topBackground} alt={`${config.title} secondary background`} className="w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/75 to-black/95" />
+        <img src={topBackground} alt={`${config.title} background`} className="w-full h-full object-cover" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/50 to-black/80" />
       </div>
 
       <div className="absolute top-4 right-4 flex items-center gap-3 z-50">
@@ -529,7 +528,7 @@ function RegisteredHomepage({ config, lang, setLang, isEs }: { config: HomeConfi
           <div className="md:self-center">
             <div className="rounded-3xl bg-white/10 p-4 ring-1 ring-white/15 shadow-lg backdrop-blur">
               <div className="text-xs uppercase tracking-[0.4em] text-white/50">{copy.playToWinTitle}</div>
-              <div className="mt-3 text-lg font-semibold text-white/90">{selectedPrize || config.featuredPrize}</div>
+              <div className="mt-3 text-lg font-semibold text-white/90">{selectedPrize || config.bigPrize.name}</div>
               <div className="mt-2 text-xs text-white/60">
                 {copy.redeemBefore} {expiryDate}
               </div>
@@ -663,6 +662,7 @@ export default function CommensalMock() {
         }
         const payload = (await response.json()) as Partial<HomeConfig> & {
           bigPrize?: Partial<HomeConfig["bigPrize"]>;
+          featuredPrize?: unknown;
         };
         const sanitizeList = (value: unknown): string[] =>
           Array.isArray(value)
@@ -681,13 +681,16 @@ export default function CommensalMock() {
           description: `${bigPrizePayload?.description ?? ""}`.trim(),
           imageUrl: `${bigPrizePayload?.imageUrl ?? ""}`.trim(),
         };
+        const fallbackFeaturedName = `${payload.featuredPrize ?? ""}`.trim();
+        if (normalizedBigPrize.name.length === 0 && fallbackFeaturedName.length > 0) {
+          normalizedBigPrize.name = fallbackFeaturedName;
+        }
         const normalized: HomeConfig = {
           title: `${payload.title ?? ""}`.trim(),
           description: `${payload.description ?? ""}`.trim(),
           address: `${payload.address ?? ""}`.trim(),
           backgroundImageUrl,
           secondaryImageUrl,
-          featuredPrize: `${payload.featuredPrize ?? ""}`.trim(),
           prizes: normalizedPrizes,
           longDescription: `${payload.longDescription ?? ""}`.trim(),
           websiteUrl: `${payload.websiteUrl ?? ""}`.trim(),
@@ -704,7 +707,6 @@ export default function CommensalMock() {
           normalized.title.length > 0 &&
           normalized.description.length > 0 &&
           normalized.address.length > 0 &&
-          normalized.featuredPrize.length > 0 &&
           normalized.prizes.length > 0 &&
           normalized.longDescription.length > 0 &&
           normalized.websiteUrl.length > 0 &&
