@@ -64,6 +64,10 @@ npm run build:all
 
 El servidor sirve la API bajo el prefijo `/api` y expone los archivos estáticos generados en `/`.
 
+## Acceso al frontend en producción
+
+Cuando despliegues la aplicación en un servidor, el frontend compilado queda disponible en la raíz del dominio que utilices. Por ejemplo, si el backend está publicado en `https://tu-dominio.com`, podrás ingresar a la interfaz web navegando directamente a `https://tu-dominio.com/`. La API REST continuará disponible bajo el prefijo `/api`, por lo que cualquier cliente externo deberá seguir utilizando rutas como `https://tu-dominio.com/api/verification/send`.
+
 ## Endpoints
 
 Todos los endpoints requieren el header `x-api-key`.
