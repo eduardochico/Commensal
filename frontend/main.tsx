@@ -1,55 +1,21 @@
 // Commensal – Single-file React mock (3 screens: Home → Signup SMS → Verify 4-digit)
-// Fix: remove duplicate LanguageSelector declaration; show selector on ALL screens.
-// - Home: 3D dice, AirPods grand prize, restored prize list, casino CTA
-// - Signup (SMS): SAME restaurant background, casino primary button, subtle back link
-// - Verify: 4-digit code input, casino primary button, subtle back link
-// - ES/EN i18n, Work Sans, casino typographic feel
-
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { createRoot } from "react-dom/client";
 
-// ---------- Inline UI primitives ----------
 function Button({ className = "", style, children, ...props }: any) {
-  return (
-    <button
-      {...props}
-      style={style}
-      className={
-        "inline-flex items-center justify-center select-none " +
-        "rounded-md px-4 py-2 font-medium transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60 " +
-        className
-      }
-    >
-      {children}
-    </button>
-  );
+  return (<button {...props} style={style} className={"inline-flex items-center justify-center select-none rounded-md px-4 py-2 font-medium transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60 " + className}>{children}</button>);
 }
-function Card({ className = "", children }: any) {
-  return <div className={"rounded-2xl border " + className}>{children}</div>;
-}
-function CardContent({ className = "", children }: any) {
-  return <div className={className}>{children}</div>;
-}
-function Badge({ className = "", children, style }: any) {
-  return (
-    <span style={style} className={"inline-flex items-center rounded-full px-2.5 py-1 text-xs font-bold " + className}>{children}</span>
-  );
-}
+function Card({ className = "", children }: any) { return <div className={"rounded-2xl border " + className}>{children}</div>; }
+function CardContent({ className = "", children }: any) { return <div className={className}>{children}</div>; }
+function Badge({ className = "", children, style }: any) { return (<span style={style} className={"inline-flex items-center rounded-full px-2.5 py-1 text-xs font-bold " + className}>{children}</span>); }
 
-// ---------- Config ----------
 const BG_IMAGE = "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=1600&auto=format&fit=crop";
 const DEFAULT_PRIZES = [
   { key: "airpods", title_en: "AirPods Pro 2", title_es: "AirPods Pro 2", subtitle_en: "Grand Prize · One lucky winner", subtitle_es: "Sorteo del Gran Premio · Un ganador afortunado", icon: "star" },
   { key: "huevos", title_en: "Free Huevos Rancheros", title_es: "Free Huevos Rancheros", subtitle_en: "Instant Win", subtitle_es: "Gana al Instante", icon: "gift" },
   { key: "15off", title_en: "15% Off Order (up to $20)", title_es: "15% Off Order (up to $20)", subtitle_en: "Instant Win", subtitle_es: "Gana al Instante", icon: "percent" },
 ];
-const COUNTRIES = [
-  { code: "CA", en: "Canada", es: "Canadá", dial: "+1" },
-  { code: "US", en: "United States", es: "Estados Unidos", dial: "+1" },
-  { code: "MX", en: "Mexico", es: "México", dial: "+52" },
-];
+const COUNTRIES = [{ code: "CA", en: "Canada", es: "Canadá", dial: "+1" },{ code: "US", en: "United States", es: "Estados Unidos", dial: "+1" },{ code: "MX", en: "Mexico", es: "México", dial: "+52" }];
 
-// ---------- i18n ----------
 function useI18n(langOverride?: string){
   const detectedEs = (typeof navigator !== 'undefined' ? navigator.language : 'en').toLowerCase().startsWith('es');
   const [lang, setLang] = useState(langOverride || (detectedEs ? 'es' : 'en'));
@@ -74,20 +40,10 @@ function useI18n(langOverride?: string){
   return {t, isEs, lang, setLang};
 }
 
-// ---------- Language Selector (single definition) ----------
 function LanguageSelector({ lang, setLang }: { lang: string; setLang: (l: string) => void }) {
-  return (
-    <div className="absolute top-4 right-4 flex items-center gap-1 text-white/70 text-xs font-medium z-50">
-      <span className="opacity-80">🌐</span>
-      <select value={lang} onChange={e=>setLang((e.target as HTMLSelectElement).value)} className="bg-transparent text-white/80 border border-white/20 rounded-md px-1 py-0.5 focus:outline-none">
-        <option value="en">EN</option>
-        <option value="es">ES</option>
-      </select>
-    </div>
-  );
+  return (<div className="absolute top-4 right-4 flex items-center gap-1 text-white/70 text-xs font-medium z-50"><span className="opacity-80">🌐</span><select value={lang} onChange={e=>setLang((e.target as HTMLSelectElement).value)} className="bg-transparent text-white/80 border border-white/20 rounded-md px-1 py-0.5 focus:outline-none"><option value="en">EN</option><option value="es">ES</option></select></div>);
 }
 
-// ---------- 3D Dice ----------
 function Dice3DVisible(){
   const renderPips = (value:number)=>{
     const pip = (x:number,y:number,key:number)=>(
@@ -115,12 +71,10 @@ function Dice3DVisible(){
         </div>
       ))}
       <style>{`
-        /* Work Sans & casino typographic feel */
         @import url('https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&display=swap');
         body, * { font-family: 'Work Sans', system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, sans-serif; }
         h1,h2,h3,h4,h5,h6 { font-weight:700; letter-spacing:.02em; text-transform:uppercase; }
         p,div,span,button,input,select { font-weight:500; }
-
         .dice3d-persp{ perspective:800px; }
         .dice3d-cube{ position:relative; width:7rem; height:7rem; transform-style:preserve-3d; }
         .dice3d-shadow{ filter:drop-shadow(0 10px 18px rgba(0,0,0,.35)); }
@@ -142,7 +96,6 @@ function Dice3DVisible(){
   );
 }
 
-// ---------- Signup (SMS) with SAME background ----------
 function SmsSignup({ onBack, onNext, t, lang }: { onBack: () => void; onNext: () => void; t: any; lang: string; }){
   const [country, setCountry] = useState(COUNTRIES[0]);
   const [email, setEmail] = useState("");
@@ -205,21 +158,15 @@ function SmsSignup({ onBack, onNext, t, lang }: { onBack: () => void; onNext: ()
     </div>
   );
 
-  function setLangFromChild(l:string){
-    // This function will be replaced at App level via prop binding
-  }
+  function setLangFromChild(l:string){ /* replaced at App via prop binding if needed */ }
 }
 
-// ---------- Verify Code (4-digit) ----------
 function VerifyCode({ onBack, onConfirm, t, lang, setLang }: { onBack: () => void; onConfirm: (code: string)=>void; t: any; lang: string; setLang: (l:string)=>void; }){
   const [digits, setDigits] = useState(["", "", "", ""]);
   const inputs = [useRef<HTMLInputElement>(null), useRef<HTMLInputElement>(null), useRef<HTMLInputElement>(null), useRef<HTMLInputElement>(null)];
-
   function handleChange(i:number, val:string){
     const v = val.replace(/\D/g, "").slice(0,1);
-    const next = [...digits];
-    next[i] = v;
-    setDigits(next);
+    const next = [...digits]; next[i] = v; setDigits(next);
     if(v && i < 3){ inputs[i+1].current?.focus(); }
   }
   function handleKeyDown(i:number, e: React.KeyboardEvent<HTMLInputElement>){
@@ -231,16 +178,13 @@ function VerifyCode({ onBack, onConfirm, t, lang, setLang }: { onBack: () => voi
     if(code.length < 4){ alert(lang==='es'? 'Ingresa los 4 dígitos' : 'Enter all 4 digits'); return; }
     onConfirm(code);
   }
-
   return (
     <div className="relative min-h-screen w-full text-white">
       <div className="absolute inset-0 -z-10">
         <img src={BG_IMAGE} alt="Restaurant background" className="w-full h-full object-cover"/>
         <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/50 to-black/80"/>
       </div>
-
       <LanguageSelector lang={lang} setLang={setLang}/>
-
       <div className="w-full min-h-screen flex items-start justify-center p-4">
         <div className="w-full max-w-md rounded-3xl bg-white/10 backdrop-blur-xl ring-1 ring-white/15 shadow-2xl p-6 md:p-8 text-center">
           <h2 className="text-2xl md:text-3xl font-bold mb-2 tracking-wide uppercase">{t.verifyTitle}</h2>
@@ -248,17 +192,9 @@ function VerifyCode({ onBack, onConfirm, t, lang, setLang }: { onBack: () => voi
           <form onSubmit={submit} className="space-y-6">
             <div className="flex justify-center gap-3">
               {digits.map((d, i)=> (
-                <input
-                  key={i}
-                  ref={inputs[i]}
-                  inputMode="numeric"
-                  pattern="[0-9]*"
-                  maxLength={1}
-                  value={d}
-                  onChange={e=>handleChange(i, (e.target as HTMLInputElement).value)}
-                  onKeyDown={e=>handleKeyDown(i, e)}
-                  className="w-14 h-16 md:w-16 md:h-20 text-center text-2xl md:text-3xl rounded-2xl bg-white/90 text-black ring-2 ring-transparent focus:ring-emerald-400"
-                />
+                <input key={i} ref={inputs[i]} inputMode="numeric" pattern="[0-9]*" maxLength={1}
+                  value={d} onChange={e=>handleChange(i, (e.target as HTMLInputElement).value)} onKeyDown={e=>handleKeyDown(i, e)}
+                  className="w-14 h-16 md:w-16 md:h-20 text-center text-2xl md:text-3xl rounded-2xl bg-white/90 text-black ring-2 ring-transparent focus:ring-emerald-400" />
               ))}
             </div>
             <div className="flex flex-col items-center gap-3">
@@ -273,12 +209,9 @@ function VerifyCode({ onBack, onConfirm, t, lang, setLang }: { onBack: () => voi
   );
 }
 
-// ---------- App ----------
 export default function CommensalMock(){
   const {t,isEs,lang,setLang}=useI18n();
   const [stage, setStage] = useState<'home'|'signup'|'verify'>("home");
-
-  // Smoke tests
   useEffect(()=>{
     console.assert(typeof Dice3DVisible === 'function', 'Dice3DVisible defined');
     console.assert(typeof LanguageSelector === 'function', 'LanguageSelector defined');
@@ -297,29 +230,19 @@ export default function CommensalMock(){
     </div>
   );
 
-  // Home
   return (
     <div className="relative min-h-screen text-white overflow-x-hidden pb-40">
-      {/* Background */}
       <div className="absolute inset-0 -z-10">
         <img src={BG_IMAGE} alt="Restaurant background" className="w-full h-full object-cover"/>
         <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/50 to-black/80"/>
       </div>
-
-      {/* Language Selector */}
       <LanguageSelector lang={lang} setLang={setLang}/>
-
-      {/* Header */}
       <header className="pt-10 flex flex-col items-center gap-2">
         <div className="text-sm uppercase tracking-wide text-white/80">{t.taglineTop}</div>
         <h1 className="text-4xl md:text-5xl font-extrabold tracking-wide uppercase">{t.playToWin}</h1>
         <div className="text-base text-white/80">{t.areYouLucky}</div>
       </header>
-
-      {/* Dice */}
       <section className="flex items-center justify-center mt-6"><Dice3DVisible/></section>
-
-      {/* Grand prize card */}
       <section className="mx-auto mt-6 w-full max-w-3xl px-4 text-center">
         <Card className="bg-black/60 text-white border-white/10">
           <CardContent className="p-5 md:p-6 flex items-center justify-between gap-4">
@@ -329,15 +252,11 @@ export default function CommensalMock(){
           </CardContent>
         </Card>
       </section>
-
-      {/* Prize list */}
       <section className="mx-auto mt-5 grid w-full max-w-3xl grid-cols-1 gap-3 px-4">
         {DEFAULT_PRIZES.slice(1).map(p => (
           <div key={p.key} className="flex items-center justify-between rounded-3xl bg-black/55 px-5 py-4 ring-1 ring-white/10 shadow-lg">
             <div className="flex items-center gap-4">
-              <div className="flex size-10 items-center justify-center rounded-2xl bg-white/10 ring-1 ring-white/20">
-                <span className="text-white/80">★</span>
-              </div>
+              <div className="flex size-10 items-center justify-center rounded-2xl bg-white/10 ring-1 ring-white/20"><span className="text-white/80">★</span></div>
               <div>
                 <div className="font-semibold">{isEs ? p.title_es : p.title_en}</div>
                 <div className="text-xs text-white/70">{isEs ? p.subtitle_es : p.subtitle_en}</div>
@@ -346,8 +265,6 @@ export default function CommensalMock(){
           </div>
         ))}
       </section>
-
-      {/* CTA */}
       <section className="mx-auto mt-6 mb-24 w-full max-w-3xl px-4">
         <div className="rounded-3xl bg-black/55 p-5 ring-1 ring-white/10 text-center">
           <Button onClick={()=>setStage('signup')} className="w-full rounded-2xl py-6 text-base font-semibold hover:scale-105 transition-transform duration-300 tracking-wide uppercase" style={{background:'linear-gradient(135deg,#E67E22,#C0392B,#F33912)',color:'white',boxShadow:'0 0 20px rgba(230,126,34,0.6),0 0 10px rgba(192,57,43,0.5)'}}>{t.registerCta} →</Button>
@@ -357,16 +274,3 @@ export default function CommensalMock(){
     </div>
   );
 }
-
-if (typeof document !== "undefined") {
-  const container = document.getElementById("root");
-  if (container) {
-    const root = createRoot(container);
-    root.render(
-      <React.StrictMode>
-        <CommensalMock />
-      </React.StrictMode>
-    );
-  }
-}
-
