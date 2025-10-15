@@ -6,6 +6,7 @@
 // - ES/EN i18n, Work Sans, casino typographic feel
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { createRoot } from "react-dom/client";
 
 // ---------- Inline UI primitives ----------
 function Button({ className = "", style, children, ...props }: any) {
@@ -355,5 +356,17 @@ export default function CommensalMock(){
       </section>
     </div>
   );
+}
+
+if (typeof document !== "undefined") {
+  const container = document.getElementById("root");
+  if (container) {
+    const root = createRoot(container);
+    root.render(
+      <React.StrictMode>
+        <CommensalMock />
+      </React.StrictMode>
+    );
+  }
 }
 
