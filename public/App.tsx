@@ -82,6 +82,7 @@ function useI18n(langOverride?: string){
   const isEs = lang === 'es';
   const t = useMemo(()=> isEs ? {
     playToWin: "PLAY TO WIN", areYouLucky: "¿Eres suertud@?", registerCta: "Regístrate para Jugar",
+    skipRegistrationCta: "Ir directo a la experiencia",
     grandRaffle: "SORTEO DEL GRAN PREMIO", limited: "Entradas limitadas", oneEntry: "Gratis para jugar · Una entrada por cliente",
     signupTitle: "Regístrate para Jugar",
     email: "Correo electrónico", phone: "Número de teléfono", country: "País",
@@ -90,6 +91,7 @@ function useI18n(langOverride?: string){
     verifyCta: "Confirmar código", didntReceive: "¿No recibiste el código? Reenviar",
   } : {
     playToWin: "PLAY TO WIN", areYouLucky: "Are you lucky?", registerCta: "Register to Play",
+    skipRegistrationCta: "Jump straight to experience",
     grandRaffle: "GRAND PRIZE RAFFLE", limited: "Limited entries", oneEntry: "Free to play · One entry per customer",
     signupTitle: "Register to Play",
     email: "Email", phone: "Phone number", country: "Country",
@@ -350,14 +352,22 @@ function HomeScreen({ t, lang, setLang, config }: { t: any; lang: string; setLan
       {/* CTA */}
       <section className="mx-auto mt-6 mb-24 w-full max-w-3xl px-4">
         <div className="rounded-3xl bg-black/55 p-5 ring-1 ring-white/10 text-center">
-          <Button
-            onClick={() => navigate("/signup")}
-            className="w-full rounded-2xl py-6 text-base font-semibold hover:scale-105 transition-transform duration-300 tracking-wide uppercase"
-            style={{ background: "linear-gradient(135deg,#E67E22,#C0392B,#F33912)", color: "white", boxShadow: "0 0 20px rgba(230,126,34,0.6),0 0 10px rgba(192,57,43,0.5)" }}
-          >
-            {t.registerCta} →
-          </Button>
-          <div className="mt-2 text-xs text-white/70">{t.oneEntry}</div>
+          <div className="flex flex-col gap-3">
+            <Button
+              onClick={() => navigate("/signup")}
+              className="w-full rounded-2xl py-6 text-base font-semibold hover:scale-105 transition-transform duration-300 tracking-wide uppercase"
+              style={{ background: "linear-gradient(135deg,#E67E22,#C0392B,#F33912)", color: "white", boxShadow: "0 0 20px rgba(230,126,34,0.6),0 0 10px rgba(192,57,43,0.5)" }}
+            >
+              {t.registerCta} →
+            </Button>
+            <Button
+              onClick={() => navigate("/homepage-registered")}
+              className="w-full rounded-2xl border border-white/30 bg-white/10 py-4 text-sm font-semibold uppercase tracking-wide text-white/90 transition-transform duration-300 hover:scale-105"
+            >
+              {t.skipRegistrationCta}
+            </Button>
+          </div>
+          <div className="mt-3 text-xs text-white/70">{t.oneEntry}</div>
         </div>
       </section>
     </div>
