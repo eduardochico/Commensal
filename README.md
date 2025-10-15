@@ -26,6 +26,9 @@ Variables principales:
 - `API_KEY`: llave que deben enviar los clientes en el header `x-api-key`.
 - `TWILIO_ACCOUNT_SID` y `TWILIO_AUTH_TOKEN`: credenciales de Twilio.
 - `TWILIO_SMS_FROM`: número autorizado por Twilio en formato `+1234567890`.
+- `TWILIO_MOCK_MODE`: si lo estableces en `true`, no se intentará contactar a Twilio y los códigos solo se registrarán en logs (útil para desarrollo local).
+
+> **Nota:** Al iniciar la aplicación Nest se validará automáticamente que estas variables estén presentes (a menos que `TWILIO_MOCK_MODE` esté activo) y que `VERIFICATION_TTL` y `REDIS_PORT` tengan valores numéricos positivos. Si falta alguna credencial obligatoria, Nest fallará en el arranque con un mensaje indicando qué variable debes revisar.
 - `VERIFICATION_TTL`: segundos que dura vigente el código (default 600).
 - Datos de conexión a Redis (`REDIS_HOST`, `REDIS_PORT`, `REDIS_PASSWORD`).
 
@@ -83,4 +86,5 @@ Valida el código contra Redis y, si coincide, marca la verificación como exito
 - Los números telefónicos deben venir en formato E.164.
 - Redis almacena los códigos usando como llave la combinación de correo y teléfono.
 - Al validar correctamente, el código se elimina de Redis.
+- Si recibes un error `401` de Twilio (código `20003`), revisa las credenciales configuradas o activa `TWILIO_MOCK_MODE=true` para ejecutar en modo simulación durante el desarrollo.
 - El servidor intentará iniciar en HTTPS por defecto. Si faltan certificados válidos, retrocede automáticamente a HTTP.
