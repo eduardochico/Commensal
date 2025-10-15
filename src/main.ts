@@ -14,6 +14,8 @@ async function bootstrap() {
     ...(httpsOptions ? { httpsOptions } : {}),
   });
 
+  app.setGlobalPrefix('api');
+
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,

@@ -38,17 +38,31 @@ Variables principales:
 npm install
 ```
 
-3. Levanta el servidor en modo desarrollo:
+3. Genera los archivos estáticos del frontend (opcional en desarrollo, pero necesario si modificas `frontend/main.tsx`):
+
+```bash
+npm run build:frontend
+```
+
+4. Levanta el servidor en modo desarrollo:
 
 ```bash
 npm run start:dev
 ```
 
-4. Para construir la versión compilada:
+5. Para construir la versión compilada del backend únicamente:
 
 ```bash
 npm run build
 ```
+
+Si quieres generar el backend y el frontend en un solo paso, ejecuta:
+
+```bash
+npm run build:all
+```
+
+El servidor sirve la API bajo el prefijo `/api` y expone los archivos estáticos generados en `/`.
 
 ## Endpoints
 
