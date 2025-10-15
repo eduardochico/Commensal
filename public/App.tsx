@@ -350,14 +350,16 @@ function HomeScreen({ t, lang, setLang, config }: { t: any; lang: string; setLan
       {/* CTA */}
       <section className="mx-auto mt-6 mb-24 w-full max-w-3xl px-4">
         <div className="rounded-3xl bg-black/55 p-5 ring-1 ring-white/10 text-center">
-          <Button
-            onClick={() => navigate("/signup")}
-            className="w-full rounded-2xl py-6 text-base font-semibold hover:scale-105 transition-transform duration-300 tracking-wide uppercase"
-            style={{ background: "linear-gradient(135deg,#E67E22,#C0392B,#F33912)", color: "white", boxShadow: "0 0 20px rgba(230,126,34,0.6),0 0 10px rgba(192,57,43,0.5)" }}
-          >
-            {t.registerCta} →
-          </Button>
-          <div className="mt-2 text-xs text-white/70">{t.oneEntry}</div>
+          <div className="flex flex-col gap-3">
+            <Button
+              onClick={() => navigate("/signup")}
+              className="w-full rounded-2xl py-6 text-base font-semibold hover:scale-105 transition-transform duration-300 tracking-wide uppercase"
+              style={{ background: "linear-gradient(135deg,#E67E22,#C0392B,#F33912)", color: "white", boxShadow: "0 0 20px rgba(230,126,34,0.6),0 0 10px rgba(192,57,43,0.5)" }}
+            >
+              {t.registerCta} →
+            </Button>
+          </div>
+          <div className="mt-3 text-xs text-white/70">{t.oneEntry}</div>
         </div>
       </section>
     </div>
