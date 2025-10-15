@@ -4,6 +4,7 @@ import { RedisService } from '../redis/redis.service';
 import { SendCodeDto } from './dto/send-code.dto';
 import { VerifyCodeDto } from './dto/verify-code.dto';
 import { Twilio } from 'twilio';
+import { inspect } from 'util';
 
 @Injectable()
 export class VerificationService {
@@ -46,8 +47,12 @@ export class VerificationService {
         body: `Tu código de verificación es: ${code}`,
       });
     } catch (error) {
-      const err = error as Error;
-      this.logger.error(`Error enviando SMS: ${err.message}`);
+      const err = error as Error & { code?: string };
+      const stack = err instanceof Error ? err.stack : undefined;
+      const codeInfo = err?.code ? ` (code: ${err.code})` : '';
+
+      this.logger.error(`Error enviando SMS${codeInfo}: ${err.message}`, stack);
+      this.logger.error(`Detalles completos del error de Twilio:\n${inspect(error, { depth: null })}`);
       await redis.del(redisKey);
       throw new InternalServerErrorException('No se pudo enviar el SMS');
     }
