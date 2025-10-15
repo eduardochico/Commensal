@@ -35,11 +35,15 @@ function Badge({ className = "", children, style }: any) {
 
 // ---------- Config ----------
 const BG_IMAGE = "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=1600&auto=format&fit=crop";
-const DEFAULT_PRIZES = [
-  { key: "airpods", title_en: "AirPods Pro 2", title_es: "AirPods Pro 2", subtitle_en: "Grand Prize · One lucky winner", subtitle_es: "Sorteo del Gran Premio · Un ganador afortunado", icon: "star" },
-  { key: "huevos", title_en: "Free Huevos Rancheros", title_es: "Free Huevos Rancheros", subtitle_en: "Instant Win", subtitle_es: "Gana al Instante", icon: "gift" },
-  { key: "15off", title_en: "15% Off Order (up to $20)", title_es: "15% Off Order (up to $20)", subtitle_en: "Instant Win", subtitle_es: "Gana al Instante", icon: "percent" },
-];
+
+type HomeConfig = {
+  title: string;
+  description: string;
+  address: string;
+  featuredPrize: string;
+  prizes: string[];
+};
+
 const COUNTRIES = [
   { code: "CA", en: "Canada", es: "Canadá", dial: "+1" },
   { code: "US", en: "United States", es: "Estados Unidos", dial: "+1" },
@@ -54,7 +58,7 @@ function useI18n(langOverride?: string){
   const t = useMemo(()=> isEs ? {
     playToWin: "PLAY TO WIN", areYouLucky: "¿Eres suertud@?", registerCta: "Regístrate para Jugar",
     grandRaffle: "SORTEO DEL GRAN PREMIO", limited: "Entradas limitadas", oneEntry: "Gratis para jugar · Una entrada por cliente",
-    taglineTop: "Brunch Vancouver | Breakfast & Brunch Restaurant", signupTitle: "Regístrate para Jugar",
+    signupTitle: "Regístrate para Jugar",
     email: "Correo electrónico", phone: "Número de teléfono", country: "País",
     registerWithSMS: "Registrarse por SMS", acceptSMS: "Acepto recibir verificación y promociones de Commensal por SMS.", back: "Regresar",
     verifyTitle: "Verifica tu código", verifySubtitle: "Ingresa el código de 4 dígitos que enviamos por SMS",
@@ -62,7 +66,7 @@ function useI18n(langOverride?: string){
   } : {
     playToWin: "PLAY TO WIN", areYouLucky: "Are you lucky?", registerCta: "Register to Play",
     grandRaffle: "GRAND PRIZE RAFFLE", limited: "Limited entries", oneEntry: "Free to play · One entry per customer",
-    taglineTop: "Brunch Vancouver | Breakfast & Brunch Restaurant", signupTitle: "Register to Play",
+    signupTitle: "Register to Play",
     email: "Email", phone: "Phone number", country: "Country",
     registerWithSMS: "Register via SMS", acceptSMS: "I agree to receive verification and promotions from Commensal via SMS.", back: "Back",
     verifyTitle: "Verify your code", verifySubtitle: "Enter the 4-digit code we sent via SMS",
@@ -138,7 +142,7 @@ function Dice3DVisible(){
 }
 
 // ---------- Signup (SMS) with SAME background ----------
-function SmsSignup({ onBack, onNext, t, lang, setLang }: { onBack: () => void; onNext: () => void; t: any; lang: string; setLang: (l: string) => void; }){
+function SmsSignup({ onBack, onNext, t, lang, setLang, config }: { onBack: () => void; onNext: () => void; t: any; lang: string; setLang: (l: string) => void; config: HomeConfig; }){
   const [country, setCountry] = useState(COUNTRIES[0]);
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -162,10 +166,10 @@ function SmsSignup({ onBack, onNext, t, lang, setLang }: { onBack: () => void; o
       <div className="w-full min-h-screen flex items-start justify-center p-4">
         <div className="w-full max-w-xl rounded-3xl bg-white/10 backdrop-blur-xl ring-1 ring-white/15 shadow-2xl p-6 md:p-8">
           <div className="flex items-center gap-3 mb-4">
-            <img src={BG_IMAGE} alt="Commensal" className="size-12 rounded-xl object-cover"/>
+            <img src={BG_IMAGE} alt={config.title} className="size-12 rounded-xl object-cover"/>
             <div>
-              <div className="text-lg font-semibold tracking-wide">Commensal</div>
-              <div className="text-xs text-white/70">1147 Granville St, Vancouver</div>
+              <div className="text-lg font-semibold tracking-wide">{config.title}</div>
+              <div className="text-xs text-white/70">{config.address}</div>
             </div>
           </div>
 
@@ -255,8 +259,9 @@ function VerifyCode({ onBack, onConfirm, t, lang, setLang }: { onBack: () => voi
 }
 
 // ---------- App ----------
-function HomeScreen({ t, isEs, lang, setLang }: { t: any; isEs: boolean; lang: string; setLang: (l: string) => void }) {
+function HomeScreen({ t, lang, setLang, config }: { t: any; lang: string; setLang: (l: string) => void; config: HomeConfig }) {
   const navigate = useNavigate();
+  const tagline = `${config.title} | ${config.description}`;
 
   return (
     <div className="relative min-h-screen text-white overflow-x-hidden pb-40">
@@ -271,7 +276,7 @@ function HomeScreen({ t, isEs, lang, setLang }: { t: any; isEs: boolean; lang: s
 
       {/* Header */}
       <header className="pt-10 flex flex-col items-center gap-2">
-        <div className="text-sm uppercase tracking-wide text-white/80">{t.taglineTop}</div>
+        <div className="text-sm uppercase tracking-wide text-white/80">{tagline}</div>
         <h1 className="text-4xl md:text-5xl font-extrabold tracking-wide uppercase">{t.playToWin}</h1>
         <div className="text-base text-white/80">{t.areYouLucky}</div>
       </header>
@@ -288,7 +293,7 @@ function HomeScreen({ t, isEs, lang, setLang }: { t: any; isEs: boolean; lang: s
             <Badge className="shadow-lg" style={{ background: "linear-gradient(145deg,#27AE60,#1E8449)", color: "white", boxShadow: "0 0 15px #27AE60aa" }}>
               {t.grandRaffle}
             </Badge>
-            <div className="text-xl md:text-2xl font-bold tracking-wide">{isEs ? DEFAULT_PRIZES[0].title_es : DEFAULT_PRIZES[0].title_en}</div>
+            <div className="text-xl md:text-2xl font-bold tracking-wide">{config.featuredPrize}</div>
             <div className="text-xs text-white/70">{t.limited}</div>
           </CardContent>
         </Card>
@@ -296,15 +301,14 @@ function HomeScreen({ t, isEs, lang, setLang }: { t: any; isEs: boolean; lang: s
 
       {/* Prize list */}
       <section className="mx-auto mt-5 grid w-full max-w-3xl grid-cols-1 gap-3 px-4">
-        {DEFAULT_PRIZES.slice(1).map((p) => (
-          <div key={p.key} className="flex items-center justify-between rounded-3xl bg-black/55 px-5 py-4 ring-1 ring-white/10 shadow-lg">
+        {config.prizes.map((prize, index) => (
+          <div key={`${prize}-${index}`} className="flex items-center justify-between rounded-3xl bg-black/55 px-5 py-4 ring-1 ring-white/10 shadow-lg">
             <div className="flex items-center gap-4">
               <div className="flex size-10 items-center justify-center rounded-2xl bg-white/10 ring-1 ring-white/20">
                 <span className="text-white/80">★</span>
               </div>
               <div>
-                <div className="font-semibold">{isEs ? p.title_es : p.title_en}</div>
-                <div className="text-xs text-white/70">{isEs ? p.subtitle_es : p.subtitle_en}</div>
+                <div className="font-semibold">{prize}</div>
               </div>
             </div>
           </div>
@@ -328,12 +332,12 @@ function HomeScreen({ t, isEs, lang, setLang }: { t: any; isEs: boolean; lang: s
   );
 }
 
-function SignupRoute({ t, lang, setLang }: { t: any; lang: string; setLang: (l: string) => void }) {
+function SignupRoute({ t, lang, setLang, config }: { t: any; lang: string; setLang: (l: string) => void; config: HomeConfig }) {
   const navigate = useNavigate();
 
   return (
     <div className="relative min-h-screen text-white overflow-x-hidden pb-10">
-      <SmsSignup onBack={() => navigate("/")} onNext={() => navigate("/verify")} t={t} lang={lang} setLang={setLang} />
+      <SmsSignup onBack={() => navigate("/")} onNext={() => navigate("/verify")} t={t} lang={lang} setLang={setLang} config={config} />
     </div>
   );
 }
@@ -360,6 +364,64 @@ function VerifyRoute({ t, lang, setLang, isEs }: { t: any; lang: string; setLang
 
 export default function CommensalMock() {
   const { t, isEs, lang, setLang } = useI18n();
+  const [config, setConfig] = useState<HomeConfig | null>(null);
+  const [configError, setConfigError] = useState<Error | null>(null);
+
+  useEffect(() => {
+    let isMounted = true;
+    const controller = new AbortController();
+
+    async function loadConfig() {
+      try {
+        const response = await fetch("/api/home", { signal: controller.signal });
+        if (!response.ok) {
+          throw new Error(`Failed to load home config: ${response.status}`);
+        }
+        const payload = (await response.json()) as Partial<HomeConfig>;
+        const normalizedPrizes = Array.isArray(payload.prizes)
+          ? payload.prizes.map((prize) => `${prize}`.trim()).filter((prize) => prize.length > 0)
+          : [];
+        const normalized: HomeConfig = {
+          title: `${payload.title ?? ""}`.trim(),
+          description: `${payload.description ?? ""}`.trim(),
+          address: `${payload.address ?? ""}`.trim(),
+          featuredPrize: `${payload.featuredPrize ?? ""}`.trim(),
+          prizes: normalizedPrizes,
+        };
+
+        const hasRequiredFields =
+          normalized.title.length > 0 &&
+          normalized.description.length > 0 &&
+          normalized.address.length > 0 &&
+          normalized.featuredPrize.length > 0 &&
+          normalized.prizes.length > 0;
+
+        if (!hasRequiredFields) {
+          throw new Error("Home configuration is incomplete");
+        }
+
+        if (isMounted) {
+          setConfig(normalized);
+          setConfigError(null);
+        }
+      } catch (error) {
+        const isAbort = error instanceof DOMException && error.name === "AbortError";
+        if (!isAbort && isMounted) {
+          const normalizedError =
+            error instanceof Error ? error : new Error("Failed to fetch home configuration");
+          console.error("Failed to fetch home configuration", normalizedError);
+          setConfigError(normalizedError);
+        }
+      }
+    }
+
+    loadConfig();
+
+    return () => {
+      isMounted = false;
+      controller.abort();
+    };
+  }, []);
 
   // Smoke tests (runtime) – add a couple to ensure key elements exist
   useEffect(() => {
@@ -367,11 +429,19 @@ export default function CommensalMock() {
     console.assert(typeof LanguageSelector === "function", "LanguageSelector defined");
   }, []);
 
+  if (configError) {
+    throw configError;
+  }
+
+  if (!config) {
+    return null;
+  }
+
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<HomeScreen t={t} isEs={isEs} lang={lang} setLang={setLang} />} />
-        <Route path="/signup" element={<SignupRoute t={t} lang={lang} setLang={setLang} />} />
+        <Route path="/" element={<HomeScreen t={t} lang={lang} setLang={setLang} config={config} />} />
+        <Route path="/signup" element={<SignupRoute t={t} lang={lang} setLang={setLang} config={config} />} />
         <Route path="/verify" element={<VerifyRoute t={t} lang={lang} setLang={setLang} isEs={isEs} />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

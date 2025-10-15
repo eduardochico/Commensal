@@ -5,6 +5,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { VerificationModule } from './verification/verification.module';
 import { RedisModule } from './redis/redis.module';
+import { HomeModule } from './home/home.module';
 
 @Module({
   imports: [
@@ -63,6 +64,7 @@ import { RedisModule } from './redis/redis.module';
     }),
     RedisModule,
     VerificationModule,
+    HomeModule,
   ],
 })
 export class AppModule {}
