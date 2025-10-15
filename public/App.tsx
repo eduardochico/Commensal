@@ -45,9 +45,19 @@ type HomeConfig = {
 };
 
 const COUNTRIES = [
-  { code: "CA", en: "Canada", es: "Canadá", dial: "+1" },
-  { code: "US", en: "United States", es: "Estados Unidos", dial: "+1" },
-  { code: "MX", en: "Mexico", es: "México", dial: "+52" },
+  { code: "CA", en: "Canada", es: "Canadá", dial: "+1", flag: "🇨🇦" },
+  { code: "US", en: "United States", es: "Estados Unidos", dial: "+1", flag: "🇺🇸" },
+  { code: "MX", en: "Mexico", es: "México", dial: "+52", flag: "🇲🇽" },
+  { code: "CN", en: "China", es: "China", dial: "+86", flag: "🇨🇳" },
+  { code: "IN", en: "India", es: "India", dial: "+91", flag: "🇮🇳" },
+  { code: "PH", en: "Philippines", es: "Filipinas", dial: "+63", flag: "🇵🇭" },
+  { code: "GB", en: "United Kingdom", es: "Reino Unido", dial: "+44", flag: "🇬🇧" },
+  { code: "AU", en: "Australia", es: "Australia", dial: "+61", flag: "🇦🇺" },
+  { code: "JP", en: "Japan", es: "Japón", dial: "+81", flag: "🇯🇵" },
+  { code: "KR", en: "South Korea", es: "Corea del Sur", dial: "+82", flag: "🇰🇷" },
+  { code: "FR", en: "France", es: "Francia", dial: "+33", flag: "🇫🇷" },
+  { code: "DE", en: "Germany", es: "Alemania", dial: "+49", flag: "🇩🇪" },
+  { code: "BR", en: "Brazil", es: "Brasil", dial: "+55", flag: "🇧🇷" },
 ];
 
 // ---------- i18n ----------
@@ -185,7 +195,11 @@ function SmsSignup({ onBack, onNext, t, lang, setLang, config }: { onBack: () =>
               <label className="text-sm font-medium">{t.phone}</label>
               <div className="mt-1 flex gap-2">
                 <select value={country.code} onChange={e=>setCountry(COUNTRIES.find(c=>c.code===(e.target as HTMLSelectElement).value) || COUNTRIES[0])} className="min-w-40 rounded-xl bg-white/90 text-black px-3 py-3 outline-none ring-2 ring-transparent focus:ring-emerald-400">
-                  {COUNTRIES.map(c => (<option key={c.code} value={c.code}>{lang==='es'?c.es:c.en} ({c.dial})</option>))}
+                  {COUNTRIES.map(c => (
+                    <option key={c.code} value={c.code} aria-label={(lang==='es'?c.es:c.en) + ' ' + c.dial}>
+                      {`${c.flag} ${c.dial}`}
+                    </option>
+                  ))}
                 </select>
                 <input type="tel" value={phone} onChange={e=>setPhone((e.target as HTMLInputElement).value)} placeholder={lang==='es'?"Tu número":"Your number"} className="flex-1 rounded-xl bg-white/90 text-black px-4 py-3 outline-none ring-2 ring-transparent focus:ring-emerald-400"/>
               </div>
