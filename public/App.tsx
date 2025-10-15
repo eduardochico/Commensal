@@ -34,14 +34,29 @@ function Badge({ className = "", children, style }: any) {
 }
 
 // ---------- Config ----------
-const BG_IMAGE = "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=1600&auto=format&fit=crop";
+const DEFAULT_BG_IMAGE = "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=1600&auto=format&fit=crop";
 
 type HomeConfig = {
   title: string;
   description: string;
   address: string;
+  backgroundImageUrl: string;
+  secondaryImageUrl: string;
   featuredPrize: string;
   prizes: string[];
+  longDescription: string;
+  websiteUrl: string;
+  instagramUrl: string;
+  platesCarousel: string[];
+  collageImages: string[];
+  currentPoints: number;
+  totalPoints: number;
+  bigPrize: {
+    name: string;
+    description: string;
+    imageUrl: string;
+  };
+  termsOfService: string;
 };
 
 const COUNTRIES = [
@@ -86,9 +101,9 @@ function useI18n(langOverride?: string){
 }
 
 // ---------- Language Selector (single definition) ----------
-function LanguageSelector({ lang, setLang }: { lang: string; setLang: (l: string) => void }) {
+function LanguageSelector({ lang, setLang, className = "absolute top-4 right-4 flex items-center gap-1 text-white/70 text-xs font-medium z-50" }: { lang: string; setLang: (l: string) => void; className?: string }) {
   return (
-    <div className="absolute top-4 right-4 flex items-center gap-1 text-white/70 text-xs font-medium z-50">
+    <div className={className}>
       <span className="opacity-80">🌐</span>
       <select value={lang} onChange={e=>setLang((e.target as HTMLSelectElement).value)} className="bg-transparent text-white/80 border border-white/20 rounded-md px-1 py-0.5 focus:outline-none">
         <option value="en">EN</option>
@@ -157,6 +172,7 @@ function SmsSignup({ onBack, onNext, t, lang, setLang, config }: { onBack: () =>
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [agree, setAgree] = useState(false);
+  const backgroundImage = config.backgroundImageUrl || DEFAULT_BG_IMAGE;
 
   function onSubmit(e: React.FormEvent){
     e.preventDefault();
@@ -167,7 +183,7 @@ function SmsSignup({ onBack, onNext, t, lang, setLang, config }: { onBack: () =>
   return (
     <div className="relative min-h-screen w-full text-white">
       <div className="absolute inset-0 -z-10">
-        <img src={BG_IMAGE} alt="Restaurant background" className="w-full h-full object-cover"/>
+        <img src={backgroundImage} alt="Restaurant background" className="w-full h-full object-cover"/>
         <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/50 to-black/80"/>
       </div>
 
@@ -176,7 +192,7 @@ function SmsSignup({ onBack, onNext, t, lang, setLang, config }: { onBack: () =>
       <div className="w-full min-h-screen flex items-start justify-center p-4">
         <div className="w-full max-w-xl rounded-3xl bg-white/10 backdrop-blur-xl ring-1 ring-white/15 shadow-2xl p-6 md:p-8">
           <div className="flex items-center gap-3 mb-4">
-            <img src={BG_IMAGE} alt={config.title} className="size-12 rounded-xl object-cover"/>
+            <img src={config.secondaryImageUrl || backgroundImage} alt={config.title} className="size-12 rounded-xl object-cover"/>
             <div>
               <div className="text-lg font-semibold tracking-wide">{config.title}</div>
               <div className="text-xs text-white/70">{config.address}</div>
@@ -220,9 +236,10 @@ function SmsSignup({ onBack, onNext, t, lang, setLang, config }: { onBack: () =>
 }
 
 // ---------- Verify Code (4-digit) ----------
-function VerifyCode({ onBack, onConfirm, t, lang, setLang }: { onBack: () => void; onConfirm: (code: string)=>void; t: any; lang: string; setLang: (l:string)=>void; }){
+function VerifyCode({ onBack, onConfirm, t, lang, setLang, backgroundImage }: { onBack: () => void; onConfirm: (code: string)=>void; t: any; lang: string; setLang: (l:string)=>void; backgroundImage: string; }){
   const [digits, setDigits] = useState(["", "", "", ""]);
   const inputs = [useRef<HTMLInputElement>(null), useRef<HTMLInputElement>(null), useRef<HTMLInputElement>(null), useRef<HTMLInputElement>(null)];
+  const background = backgroundImage || DEFAULT_BG_IMAGE;
 
   function handleChange(i:number, val:string){
     const v = val.replace(/\D/g, "").slice(0,1);
@@ -242,7 +259,7 @@ function VerifyCode({ onBack, onConfirm, t, lang, setLang }: { onBack: () => voi
   return (
     <div className="relative min-h-screen w-full text-white">
       <div className="absolute inset-0 -z-10">
-        <img src={BG_IMAGE} alt="Restaurant background" className="w-full h-full object-cover"/>
+        <img src={background} alt="Restaurant background" className="w-full h-full object-cover"/>
         <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/50 to-black/80"/>
       </div>
 
@@ -276,12 +293,13 @@ function VerifyCode({ onBack, onConfirm, t, lang, setLang }: { onBack: () => voi
 function HomeScreen({ t, lang, setLang, config }: { t: any; lang: string; setLang: (l: string) => void; config: HomeConfig }) {
   const navigate = useNavigate();
   const tagline = `${config.title} | ${config.description}`;
+  const backgroundImage = config.backgroundImageUrl || DEFAULT_BG_IMAGE;
 
   return (
     <div className="relative min-h-screen text-white overflow-x-hidden pb-40">
       {/* Background */}
       <div className="absolute inset-0 -z-10">
-        <img src={BG_IMAGE} alt="Restaurant background" className="w-full h-full object-cover" />
+        <img src={backgroundImage} alt="Restaurant background" className="w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/50 to-black/80" />
       </div>
 
@@ -356,7 +374,249 @@ function SignupRoute({ t, lang, setLang, config }: { t: any; lang: string; setLa
   );
 }
 
-function VerifyRoute({ t, lang, setLang, isEs }: { t: any; lang: string; setLang: (l: string) => void; isEs: boolean }) {
+function RegisteredHomepage({ config, lang, setLang, isEs }: { config: HomeConfig; lang: string; setLang: (l: string) => void; isEs: boolean }) {
+  const [selectedPrize, setSelectedPrize] = useState<string>("");
+  const expiryDate = useMemo(() => {
+    const date = new Date();
+    date.setDate(date.getDate() + 7);
+    return new Intl.DateTimeFormat("en-US", {
+      weekday: "short",
+      month: "short",
+      day: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+    }).format(date);
+  }, []);
+  const topBackground = config.secondaryImageUrl || config.backgroundImageUrl || DEFAULT_BG_IMAGE;
+  const progressPercent = useMemo(() => {
+    if (config.totalPoints <= 0) {
+      return 0;
+    }
+    const ratio = Math.min(1, Math.max(0, config.currentPoints / config.totalPoints));
+    return Math.round(ratio * 100);
+  }, [config.currentPoints, config.totalPoints]);
+  const copy = useMemo(
+    () =>
+      isEs
+        ? {
+            platesTitle: "Platos destacados",
+            playToWinTitle: "Juega para ganar",
+            redeemBefore: "Canjea antes de que expire:",
+            redeemButton: "Canjear premio",
+            scoreTitle: "Tu puntaje",
+            outOf: "de",
+            goalLabel: "Meta",
+            bigPrizeLabel: "Gran premio",
+            getMoreChances: "Obtén más oportunidades",
+            followInstagram: "Síguenos en Instagram (+1)",
+            visitWebsite: "Visita nuestro sitio web (+1)",
+            recommendFriend: "Recomienda a un amig@ (+10)",
+            menuTitle: "Platos del menú",
+            termsTitle: "Términos del servicio",
+            websiteCta: "Visitar sitio web",
+            pointsLabel: "puntos",
+          }
+        : {
+            platesTitle: "Signature plates",
+            playToWinTitle: "Play to win prize",
+            redeemBefore: "Redeem before it expires:",
+            redeemButton: "Redeem prize",
+            scoreTitle: "Your score",
+            outOf: "of",
+            goalLabel: "Goal",
+            bigPrizeLabel: "Big prize",
+            getMoreChances: "Get more chances",
+            followInstagram: "Follow us on Instagram (+1)",
+            visitWebsite: "Visit our website (+1)",
+            recommendFriend: "Recommend to a friend (+10)",
+            menuTitle: "Menu plates",
+            termsTitle: "Terms of service",
+            websiteCta: "Visit website",
+            pointsLabel: "points",
+          },
+    [isEs]
+  );
+
+  useEffect(() => {
+    if (!config.prizes.length) {
+      setSelectedPrize("");
+      return;
+    }
+    const randomIndex = Math.floor(Math.random() * config.prizes.length);
+    setSelectedPrize(config.prizes[randomIndex]);
+  }, [config.prizes]);
+
+  const ActionButton = ({ children, href }: { children: React.ReactNode; href?: string }) => {
+    const className =
+      "inline-flex items-center justify-center rounded-2xl px-4 py-3 text-sm font-semibold uppercase tracking-wide transition-transform duration-300 hover:scale-[1.03]" +
+      " bg-gradient-to-r from-amber-500 via-rose-500 to-red-500 text-white shadow-[0_0_18px_rgba(255,145,0,0.4)]";
+    if (href) {
+      return (
+        <a href={href} target="_blank" rel="noopener noreferrer" className={className}>
+          {children}
+        </a>
+      );
+    }
+    return (
+      <button type="button" className={className}>
+        {children}
+      </button>
+    );
+  };
+
+  return (
+    <div className="relative min-h-screen text-white overflow-x-hidden pb-20">
+      <div className="absolute inset-0 -z-10">
+        <img src={topBackground} alt={`${config.title} secondary background`} className="w-full h-full object-cover" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/75 to-black/95" />
+      </div>
+
+      <div className="absolute top-4 right-4 flex items-center gap-3 z-50">
+        <a
+          href={config.instagramUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex size-11 items-center justify-center rounded-full bg-white/15 backdrop-blur text-white transition-transform duration-300 hover:scale-105 hover:bg-white/25"
+          aria-label="Instagram"
+        >
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" className="size-5">
+            <path
+              d="M7.75 2.5h8.5A5.75 5.75 0 0 1 22 8.25v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.75v-8.5A5.75 5.75 0 0 1 7.75 2.5Z"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinejoin="round"
+            />
+            <path
+              d="M16.5 7.5h.01M12 9.25A2.75 2.75 0 1 0 12 14.75 2.75 2.75 0 0 0 12 9.25Z"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </a>
+        <LanguageSelector lang={lang} setLang={setLang} className="relative flex items-center gap-1 text-white/70 text-xs font-medium" />
+      </div>
+
+      <section className="px-4 md:px-10 pt-16 pb-12">
+        <div className="flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
+          <div className="max-w-3xl">
+            <div className="text-sm uppercase tracking-[0.3em] text-white/60">{config.address}</div>
+            <h1 className="mt-3 text-4xl md:text-5xl font-extrabold tracking-wide uppercase">{config.title}</h1>
+            <p className="mt-2 text-lg text-white/80">{config.description}</p>
+            <p className="mt-6 max-w-2xl text-base leading-relaxed text-white/80">{config.longDescription}</p>
+            <div className="mt-6 flex flex-wrap items-center gap-4">
+              <a
+                href={config.websiteUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center rounded-2xl bg-gradient-to-r from-amber-500 via-rose-500 to-red-500 px-5 py-3 text-sm font-semibold uppercase tracking-wide text-white shadow-[0_0_18px_rgba(255,145,0,0.4)] transition-transform duration-300 hover:scale-105"
+              >
+                {copy.websiteCta}
+              </a>
+            </div>
+          </div>
+          <div className="md:self-center">
+            <div className="rounded-3xl bg-white/10 p-4 ring-1 ring-white/15 shadow-lg backdrop-blur">
+              <div className="text-xs uppercase tracking-[0.4em] text-white/50">{copy.playToWinTitle}</div>
+              <div className="mt-3 text-lg font-semibold text-white/90">{selectedPrize || config.featuredPrize}</div>
+              <div className="mt-2 text-xs text-white/60">
+                {copy.redeemBefore} {expiryDate}
+              </div>
+              <div className="mt-5">
+                <Button className="w-full rounded-2xl py-3 text-sm font-semibold uppercase tracking-wide" style={{ background: "linear-gradient(135deg,#F97316,#EF4444,#F43F5E)", color: "white", boxShadow: "0 0 20px rgba(249,115,22,0.4)" }}>
+                  {copy.redeemButton}
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="px-4 md:px-10">
+        <h2 className="text-lg font-semibold uppercase tracking-[0.4em] text-white/60">{copy.platesTitle}</h2>
+        <div className="mt-5 flex gap-5 overflow-x-auto pb-4">
+          {config.platesCarousel.map((url, index) => (
+            <div key={`${url}-${index}`} className="relative min-w-[220px] overflow-hidden rounded-3xl bg-white/10 ring-1 ring-white/15 shadow-lg">
+              <img src={url} alt={`Plate ${index + 1}`} className="h-48 w-full object-cover" />
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="px-4 md:px-10 mt-12">
+        <div className="rounded-3xl bg-black/60 p-6 md:p-8 ring-1 ring-white/10 shadow-xl backdrop-blur">
+          <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
+            <div className="flex-1">
+              <div className="text-sm uppercase tracking-[0.5em] text-amber-300 drop-shadow">{copy.scoreTitle}</div>
+              <div className="mt-4 flex items-end gap-4">
+                <div className="flex items-center gap-2 rounded-2xl border border-amber-400/40 bg-black/60 px-4 py-3 font-mono text-4xl md:text-5xl tracking-[0.4em] text-amber-200 shadow-inner shadow-amber-500/20">
+                  {config.currentPoints.toString().padStart(4, "0")}
+                </div>
+                <div className="pb-2 text-sm uppercase text-white/70">
+                  {copy.outOf} {config.totalPoints.toLocaleString()} {copy.pointsLabel}
+                </div>
+              </div>
+              <div className="mt-5 h-3 w-full overflow-hidden rounded-full bg-white/10">
+                <div className="h-full rounded-full bg-gradient-to-r from-amber-400 via-rose-500 to-red-500 transition-all" style={{ width: `${progressPercent}%` }} />
+              </div>
+              <div className="mt-3 text-xs uppercase tracking-[0.3em] text-white/50">
+                {copy.goalLabel}: {config.totalPoints.toLocaleString()} {copy.pointsLabel}
+              </div>
+            </div>
+            <div className="flex flex-col items-center gap-4 text-center lg:w-72">
+              <div className="relative">
+                <div className="absolute -inset-2 rounded-full bg-amber-400/20 blur-2xl" aria-hidden="true" />
+                <img src={config.bigPrize.imageUrl} alt={config.bigPrize.name} className="relative size-40 rounded-full object-cover ring-4 ring-amber-400/70" />
+              </div>
+              <div>
+                <div className="text-xs uppercase tracking-[0.5em] text-white/50">{copy.bigPrizeLabel}</div>
+                <div className="mt-2 text-xl font-semibold uppercase tracking-wide text-white">{config.bigPrize.name}</div>
+                <p className="mt-2 text-sm text-white/70">{config.bigPrize.description}</p>
+              </div>
+            </div>
+          </div>
+          <div className="mt-8">
+            <div className="text-xs uppercase tracking-[0.4em] text-white/50">{copy.getMoreChances}</div>
+            <div className="mt-4 flex flex-wrap gap-3">
+              <ActionButton href={config.instagramUrl}>{copy.followInstagram}</ActionButton>
+              <ActionButton href={config.websiteUrl}>{copy.visitWebsite}</ActionButton>
+              <ActionButton>{copy.recommendFriend}</ActionButton>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="px-4 md:px-10 mt-12">
+        <h2 className="text-lg font-semibold uppercase tracking-[0.4em] text-white/60">{copy.menuTitle}</h2>
+        <div className="mt-5 grid grid-cols-2 gap-3 md:grid-cols-4">
+          {config.collageImages.map((url, index) => {
+            const isLarge = index % 5 === 0;
+            return (
+              <div
+                key={`${url}-${index}`}
+                className={`relative overflow-hidden rounded-3xl bg-white/10 ring-1 ring-white/15 shadow-lg ${
+                  isLarge ? "col-span-2 row-span-2 h-64 md:h-80" : "h-32 md:h-48"
+                }`}
+              >
+                <img src={url} alt={`Menu item ${index + 1}`} className="h-full w-full object-cover" />
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      <section className="px-4 md:px-10 mt-16">
+        <div className="rounded-3xl bg-black/70 p-6 md:p-8 ring-1 ring-white/10 shadow-xl backdrop-blur">
+          <h2 className="text-base font-semibold uppercase tracking-[0.4em] text-white/60">{copy.termsTitle}</h2>
+          <p className="mt-4 whitespace-pre-line text-sm leading-relaxed text-white/70">{config.termsOfService}</p>
+        </div>
+      </section>
+    </div>
+  );
+}
+
+function VerifyRoute({ t, lang, setLang, isEs, config }: { t: any; lang: string; setLang: (l: string) => void; isEs: boolean; config: HomeConfig }) {
   const navigate = useNavigate();
 
   return (
@@ -364,13 +624,13 @@ function VerifyRoute({ t, lang, setLang, isEs }: { t: any; lang: string; setLang
       <VerifyCode
         onBack={() => navigate("/signup")}
         onConfirm={(code) => {
-          console.log("Code entered:", code);
-          alert((isEs ? "Código verificado: " : "Code verified: ") + code);
-          navigate("/");
+          console.log(isEs ? "Código verificado:" : "Code verified:", code);
+          navigate("/homepage-registered");
         }}
         t={t}
         lang={lang}
         setLang={setLang}
+        backgroundImage={config.backgroundImageUrl || DEFAULT_BG_IMAGE}
       />
     </div>
   );
@@ -391,16 +651,43 @@ export default function CommensalMock() {
         if (!response.ok) {
           throw new Error(`Failed to load home config: ${response.status}`);
         }
-        const payload = (await response.json()) as Partial<HomeConfig>;
-        const normalizedPrizes = Array.isArray(payload.prizes)
-          ? payload.prizes.map((prize) => `${prize}`.trim()).filter((prize) => prize.length > 0)
-          : [];
+        const payload = (await response.json()) as Partial<HomeConfig> & {
+          bigPrize?: Partial<HomeConfig["bigPrize"]>;
+        };
+        const sanitizeList = (value: unknown): string[] =>
+          Array.isArray(value)
+            ? value
+                .map((item) => `${item ?? ""}`.trim())
+                .filter((item) => item.length > 0)
+            : [];
+        const normalizedPrizes = sanitizeList(payload.prizes);
+        const platesCarousel = sanitizeList(payload.platesCarousel);
+        const collageImages = sanitizeList(payload.collageImages);
+        const backgroundImageUrl = `${payload.backgroundImageUrl ?? ""}`.trim() || DEFAULT_BG_IMAGE;
+        const secondaryImageUrl = `${payload.secondaryImageUrl ?? ""}`.trim() || backgroundImageUrl;
+        const bigPrizePayload = payload.bigPrize ?? {};
+        const normalizedBigPrize = {
+          name: `${bigPrizePayload?.name ?? ""}`.trim(),
+          description: `${bigPrizePayload?.description ?? ""}`.trim(),
+          imageUrl: `${bigPrizePayload?.imageUrl ?? ""}`.trim(),
+        };
         const normalized: HomeConfig = {
           title: `${payload.title ?? ""}`.trim(),
           description: `${payload.description ?? ""}`.trim(),
           address: `${payload.address ?? ""}`.trim(),
+          backgroundImageUrl,
+          secondaryImageUrl,
           featuredPrize: `${payload.featuredPrize ?? ""}`.trim(),
           prizes: normalizedPrizes,
+          longDescription: `${payload.longDescription ?? ""}`.trim(),
+          websiteUrl: `${payload.websiteUrl ?? ""}`.trim(),
+          instagramUrl: `${payload.instagramUrl ?? ""}`.trim(),
+          platesCarousel,
+          collageImages,
+          currentPoints: Number.isFinite(Number(payload.currentPoints)) ? Math.max(0, Number(payload.currentPoints)) : 0,
+          totalPoints: Number.isFinite(Number(payload.totalPoints)) ? Math.max(0, Number(payload.totalPoints)) : 0,
+          bigPrize: normalizedBigPrize,
+          termsOfService: `${payload.termsOfService ?? ""}`.trim(),
         };
 
         const hasRequiredFields =
@@ -408,7 +695,17 @@ export default function CommensalMock() {
           normalized.description.length > 0 &&
           normalized.address.length > 0 &&
           normalized.featuredPrize.length > 0 &&
-          normalized.prizes.length > 0;
+          normalized.prizes.length > 0 &&
+          normalized.longDescription.length > 0 &&
+          normalized.websiteUrl.length > 0 &&
+          normalized.instagramUrl.length > 0 &&
+          normalized.platesCarousel.length > 0 &&
+          normalized.collageImages.length > 0 &&
+          normalized.bigPrize.name.length > 0 &&
+          normalized.bigPrize.description.length > 0 &&
+          normalized.bigPrize.imageUrl.length > 0 &&
+          normalized.termsOfService.length > 0 &&
+          normalized.totalPoints > 0;
 
         if (!hasRequiredFields) {
           throw new Error("Home configuration is incomplete");
@@ -456,7 +753,8 @@ export default function CommensalMock() {
       <Routes>
         <Route path="/" element={<HomeScreen t={t} lang={lang} setLang={setLang} config={config} />} />
         <Route path="/signup" element={<SignupRoute t={t} lang={lang} setLang={setLang} config={config} />} />
-        <Route path="/verify" element={<VerifyRoute t={t} lang={lang} setLang={setLang} isEs={isEs} />} />
+        <Route path="/verify" element={<VerifyRoute t={t} lang={lang} setLang={setLang} isEs={isEs} config={config} />} />
+        <Route path="/homepage-registered" element={<RegisteredHomepage config={config} lang={lang} setLang={setLang} isEs={isEs} />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
