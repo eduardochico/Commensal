@@ -4,12 +4,14 @@
   "description": "API backend en NestJS para enviar y validar códigos de verificación vía WhatsApp",
   "main": "dist/main.js",
   "scripts": {
-    "build": "tsc -p tsconfig.build.json",
+    "build": "npm run build:backend",
+    "build:backend": "tsc -p tsconfig.build.json",
     "start": "node dist/main.js",
     "start:dev": "ts-node-dev --respawn --transpile-only src/main.ts",
     "lint": "tsc --noEmit",
     "build:frontend": "esbuild frontend/main.tsx --bundle --jsx=automatic --outdir=public/assets --format=esm --sourcemap",
-    "build:all": "npm run build:frontend && npm run build"
+    "build:all": "npm run build:frontend && npm run build",
+    "postbuild": "node scripts/postbuild.js"
   },
   "keywords": [],
   "author": "",
