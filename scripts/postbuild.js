@@ -32,7 +32,7 @@ function rewriteIndexEntryPoint() {
   }
 
   const original = readFileSync(indexPath, 'utf8');
-  const rewritten = original.replace(/\/?frontend\/main\.tsx/g, '/assets/main.js');
+  const rewritten = original.replace(/src="(?:\.\/)?main\.tsx"/g, 'src="/assets/main.js"');
 
   writeFileSync(indexPath, rewritten);
 
