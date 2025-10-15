@@ -82,6 +82,7 @@ function useI18n(langOverride?: string){
   const isEs = lang === 'es';
   const t = useMemo(()=> isEs ? {
     playToWin: "PLAY TO WIN", areYouLucky: "¿Eres suertud@?", registerCta: "Regístrate para Jugar",
+    skipRegistrationCta: "Ir directo a la experiencia",
     grandRaffle: "SORTEO DEL GRAN PREMIO", limited: "Entradas limitadas", oneEntry: "Gratis para jugar · Una entrada por cliente",
     signupTitle: "Regístrate para Jugar",
     email: "Correo electrónico", phone: "Número de teléfono", country: "País",
@@ -90,6 +91,7 @@ function useI18n(langOverride?: string){
     verifyCta: "Confirmar código", didntReceive: "¿No recibiste el código? Reenviar",
   } : {
     playToWin: "PLAY TO WIN", areYouLucky: "Are you lucky?", registerCta: "Register to Play",
+    skipRegistrationCta: "Jump straight to experience",
     grandRaffle: "GRAND PRIZE RAFFLE", limited: "Limited entries", oneEntry: "Free to play · One entry per customer",
     signupTitle: "Register to Play",
     email: "Email", phone: "Phone number", country: "Country",
