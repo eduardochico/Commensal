@@ -1,11 +1,17 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import * as Joi from 'joi';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 import { VerificationModule } from './verification/verification.module';
 import { RedisModule } from './redis/redis.module';
 
 @Module({
   imports: [
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'public'),
+      exclude: ['/api*'],
+    }),
     ConfigModule.forRoot({
       isGlobal: true,
       validationSchema: Joi.object({
