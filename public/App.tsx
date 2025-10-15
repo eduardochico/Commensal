@@ -359,12 +359,6 @@ function HomeScreen({ t, lang, setLang, config }: { t: any; lang: string; setLan
             >
               {t.registerCta} →
             </Button>
-            <Button
-              onClick={() => navigate("/homepage-registered")}
-              className="w-full rounded-2xl border border-white/30 bg-white/10 py-4 text-sm font-semibold uppercase tracking-wide text-white/90 transition-transform duration-300 hover:scale-105"
-            >
-              {t.skipRegistrationCta}
-            </Button>
           </div>
           <div className="mt-3 text-xs text-white/70">{t.oneEntry}</div>
         </div>
